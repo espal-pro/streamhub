@@ -36,10 +36,10 @@ const getIframeSrc = (type: 'anime' | 'manga' | 'movie' | 'tv', mediaId: number 
     return `https://vidsrc.icu/embed/manga/${mediaId}/${itemNumber}`;
   }
   if (type === 'movie') {
-    return `https://vidsrc.icu/embed/movie/${mediaId}`;
+    return `https://vidsrc.sbs/embed/movie/${mediaId}`;
   }
   if (type === 'tv') {
-    return `https://vidsrc.icu/embed/tv/${mediaId}/${seasonNumber}/${itemNumber}`;
+    return `https://vidsrc.sbs/embed/tv/${mediaId}/${seasonNumber}/${itemNumber}`;
   }
   return '';
 };
@@ -59,15 +59,16 @@ export default function Viewer({
   const [seasonNumber, setSeasonNumber] = useState(initialSeasonNumber);
   const [isDub, setIsDub] = useState(searchParams.get('dub') === '1');
   
-  const mediaId = media.imdb_id || media.id;
-  const [iframeSrc, setIframeSrc] = useState(() => getIframeSrc(type, mediaId, initialItemNumber, initialSeasonNumber, isDub));
-  const [isLoading, setIsLoading] = useState(true);
-
-  const title = media.title.english || media.title.romaji;
   const isAnime = type === 'anime';
   const isManga = type === 'manga';
   const isMovie = type === 'movie';
   const isTv = type === 'tv';
+
+  const mediaId = (isMovie || isTv) ? media.id : (media.imdb_id || media.id);
+  const [iframeSrc, setIframeSrc] = useState(() => getIframeSrc(type, mediaId, initialItemNumber, initialSeasonNumber, isDub));
+  const [isLoading, setIsLoading] = useState(true);
+
+  const title = media.title.english || media.title.romaji;
   
   const totalItems = isAnime ? media.episodes : (isTv ? (media.seasons?.find(s => s.season_number === seasonNumber)?.episode_count) : media.chapters);
 
